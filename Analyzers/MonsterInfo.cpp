@@ -20,6 +20,9 @@ void MonsterInfo::analyze() {
 			continue; // not an interesting monster
 		if (look_at->second.attitude == ATTITUDE_UNKNOWN) {
 			command = saiph->farlook(look_at->first);
+#if 1 /* FLOW_CONTROL */
+			ignore_next_prompts = 1;
+#endif
 			priority = PRIORITY_LOOK;
 			return;
 		}

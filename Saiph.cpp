@@ -345,8 +345,12 @@ bool Saiph::run() {
 	/* analyzer stuff comes here */
 	/* reset priority */
 	int best_priority = ILLEGAL_PRIORITY;
-	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a)
+	for (vector<Analyzer *>::iterator a = analyzers.begin(); a != analyzers.end(); ++a) {
 		(*a)->priority = ILLEGAL_PRIORITY;
+#if 1 /* FLOW_CONTROL */
+		(*a)->ignore_next_prompts = 0;
+#endif
+	}
 
 	/* if question, let last analyzer parse it first */
 	if (world->question && best_analyzer != analyzers.end()) {
@@ -428,6 +432,9 @@ bool Saiph::run() {
 		cout << "No idea what to do: 42s";
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
+#if 1 /* FLOW_CONTROL */
+		world->ignore_next_prompts += 2;
+#endif
 		world->executeCommand("42s");
 		++internal_turn;
 		return true;
@@ -443,6 +450,7 @@ bool Saiph::run() {
 	cout.flush();
 	/* let an analyzer do its command */
 	Debug::notice(last_turn) << COMMAND_DEBUG_NAME << "'" << (*best_analyzer)->command << "' from analyzer " << (*best_analyzer)->name << " with priority " << best_priority << endl;
+	world->ignore_next_prompts += (*best_analyzer)->ignore_next_prompts;
 	world->executeCommand((*best_analyzer)->command);
 	if (stuck_counter % 42 == 41) {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
@@ -1042,7 +1050,7 @@ void Saiph::parseMessages(const string &messages) {
 /* main */
 int main() {
 	Debug::open("saiph.log");
-	Saiph *saiph = new Saiph(CONNECTION_TELNET);
+	Saiph *saiph = new Saiph(CONNECTION_LOCAL);
 	//for (int a = 0; a < 200 && saiph->run(); ++a)
 	//	;
 	while (saiph->run())

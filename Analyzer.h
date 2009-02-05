@@ -12,6 +12,9 @@ class Analyzer {
 		int priority;
 		std::string command;
 		bool expired;
+#if 1 /* FLOW_CONTROL */
+		int ignore_next_prompts;
+#endif
 	
 		Analyzer(std::string name);
 		virtual ~Analyzer();

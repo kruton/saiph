@@ -48,6 +48,9 @@ void Fight::analyze() {
 					command = THROW;
 					command2 = got_thrown;
 					command3 = in_line;
+#if 1 /* FLOW_CONTROL */
+					ignore_next_prompts = 0;
+#endif
 					continue;
 				}
 			}
@@ -69,7 +72,18 @@ void Fight::analyze() {
 			priority = (moves == 1) ? PRIORITY_FIGHT_ATTACK : PRIORITY_FIGHT_MOVE;
 		min_distance = distance;
 		min_moves = moves;
-		command = (moves == 1 ? FIGHT : ""); // always fight using F when distance is 1
+		if (moves == 1) {
+			// always fight using F when distance is 1
+			command = FIGHT;
+#if 1 /* FLOW_CONTROL */
+			ignore_next_prompts = 1;
+#endif
+		} else {
+			command = "";
+#if 1 /* FLOW_CONTROL */
+			ignore_next_prompts = 0;
+#endif
+		}
 		command.push_back(dir);
 		Debug::info(saiph->last_turn) << FIGHT_DEBUG_NAME << "Fighting " << m->second.symbol << " (" << m->first.row << ", " << m->first.col << "): " << "dist: " << distance << ", command: " << command << ", pri: " << priority << ", attitude: " << m->second.attitude << endl;
 	}

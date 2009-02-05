@@ -26,6 +26,9 @@ World::World(Connection *connection) : connection(connection) {
 	last_menu = Point(-1, -1);
 	memset(data, '\0', sizeof (data));
 	data_size = -1;
+#if 1 /* FLOW_CONTROL */
+	ignore_next_prompts = 0;
+#endif
 	/* fetch the first "frame" */
 	update();
 }
@@ -368,6 +371,52 @@ void World::handleEscapeSequence(int *pos, int *color) {
 void World::update() {
 	/* update the view */
 	int color = 0; // color of the char
+#if 1 /* FLOW_CONTROL */
+	bool got_question = false;
+	char tmpbuf[BUFFER_SIZE * 2];
+
+	data_size = 0;
+	while (!got_question && data_size < (BUFFER_SIZE - 2)) {
+		int tmpsize = connection->retrieve(tmpbuf, BUFFER_SIZE);
+		if (tmpsize <= 0) {
+			Debug::error() << "No data received, quitting" << endl;
+			exit(42);
+		}
+
+		for (int x = 0; x < tmpsize && data_size < (BUFFER_SIZE - 2); ++x) {
+			switch (tmpbuf[x]) {
+			case 17:
+				if (ignore_next_prompts == 0) {
+					got_question = true;
+				} else {
+					--ignore_next_prompts;
+				}
+				break;
+
+			case 18:
+			case 19:
+			case 20:
+			case 21:
+			case 22:
+			case 23:
+				break;
+
+			default:
+				data[data_size++] = tmpbuf[x];
+				break;
+			}
+		}
+
+		data[data_size] = '\0';
+	}
+	Debug::info() << DATA_DEBUG_NAME;
+	for (int a = 0; a < data_size; ++a) {
+		Debug::debugfile << data[a];
+		cout << data[a];
+	}
+	Debug::debugfile << endl;
+	cout.flush();
+#else
 	data_size = connection->retrieve(data, BUFFER_SIZE);
 	if (data_size <= 0) {
 		/* no data? sleep a sec and try again */
@@ -388,6 +437,7 @@ void World::update() {
 	for (int a = 0; a < data_size; ++a)
 		Debug::debugfile << data[a];
 	Debug::debugfile << endl;
+#endif
 	for (int pos = 0; pos < data_size; ++pos) {
 		switch (data[pos]) {
 			case 0:

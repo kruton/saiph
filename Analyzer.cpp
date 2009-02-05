@@ -12,6 +12,9 @@ Analyzer::Analyzer(string name) : name(name), priority(ILLEGAL_PRIORITY), comman
 	 * 3. complete/fail (only called for analyzer that got its command through)
 	 *
 	 * additionally, requests may come at any time */
+#if 1 /* FLOW_CONTROL */
+	ignore_next_prompts = 0;
+#endif
 }
 
 Analyzer::~Analyzer() {

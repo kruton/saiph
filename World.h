@@ -35,6 +35,9 @@ class World {
 		int max_page;
 		bool menu;
 		bool question;
+#if 1 /* FLOW_CONTROL */
+		int ignore_next_prompts;
+#endif
 
 		World(Connection *connection);
 
