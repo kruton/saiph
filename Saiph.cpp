@@ -433,7 +433,7 @@ bool Saiph::run() {
 		/* return cursor back to where it was */
 		cout << (unsigned char) 27 << "[" << world->cursor.row + 1 << ";" << world->cursor.col + 1 << "H";
 #if 1 /* FLOW_CONTROL */
-		world->ignore_next_prompts += 2;
+		world->ignore_next_prompts = 2;
 #endif
 		world->executeCommand("42s");
 		++internal_turn;
