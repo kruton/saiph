@@ -137,6 +137,9 @@ void Loot::parseMessages(const string &messages) {
 					stringstream tmp;
 					tmp << wanted << p->first;
 					command = tmp.str();
+#if 1 /* FLOW_CONTROL */
+					ignore_next_prompts = command.size() - 1;
+#endif
 				}
 				priority = PRIORITY_SELECT_ITEM;
 				return;
