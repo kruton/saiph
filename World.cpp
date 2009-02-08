@@ -379,8 +379,11 @@ void World::update() {
 	while (!got_question && data_size < (BUFFER_SIZE - 2)) {
 		int tmpsize = connection->retrieve(tmpbuf, BUFFER_SIZE);
 		if (tmpsize <= 0) {
-			Debug::error() << "No data received, quitting" << endl;
-			exit(42);
+			int tmpsize = connection->retrieve(tmpbuf, BUFFER_SIZE);
+			if (tmpsize <= 0) {
+				Debug::error() << "No data received, quitting" << endl;
+				exit(42);
+			}
 		}
 
 		for (int x = 0; x < tmpsize && data_size < (BUFFER_SIZE - 2); ++x) {

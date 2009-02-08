@@ -450,7 +450,9 @@ bool Saiph::run() {
 	cout.flush();
 	/* let an analyzer do its command */
 	Debug::notice(last_turn) << COMMAND_DEBUG_NAME << "'" << (*best_analyzer)->command << "' from analyzer " << (*best_analyzer)->name << " with priority " << best_priority << endl;
-	world->ignore_next_prompts += (*best_analyzer)->ignore_next_prompts;
+#if 1 /* FLOW CONTROL */
+	world->ignore_next_prompts = (*best_analyzer)->ignore_next_prompts;
+#endif
 	world->executeCommand((*best_analyzer)->command);
 	if (stuck_counter % 42 == 41) {
 		/* if we send the same command n times and the turn counter doesn't increase, we probably got a problem */
