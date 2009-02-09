@@ -34,6 +34,7 @@
 #include "Analyzers/Rub.h"
 #include "Analyzers/Scroll.h"
 #include "Analyzers/Shop.h"
+#include "Analyzers/Sokoban.h"
 #include "Analyzers/Throne.h"
 #include "Analyzers/Unihorn.h"
 #include "Analyzers/Valkyrie.h"
@@ -107,6 +108,7 @@ Saiph::Saiph(int interface) {
 	analyzers.push_back(new Rub(this));
 	analyzers.push_back(new Scroll(this));
 	analyzers.push_back(new Shop(this));
+	analyzers.push_back(new Sokoban(this));
 	analyzers.push_back(new Throne(this));
 	analyzers.push_back(new Unihorn(this));
 	analyzers.push_back(new Valkyrie(this));
@@ -940,7 +942,12 @@ void Saiph::dumpMaps() {
 			cout << (unsigned char) 27 << "[33m";
 		cout << i->first;
 		cout << " - " << i->second.count;
-		cout << " " << (i->second.beatitude == BLESSED ? "blessed" : (i->second.beatitude == CURSED ? "cursed" : (i->second.beatitude == UNCURSED ? "uncursed" : "unknown")));
+		if (i->second.beatitude == BLESSED)
+			cout << " blessed";
+		else if (i->second.beatitude == CURSED)
+			cout << " cursed";
+		else if (i->second.beatitude == UNCURSED)
+			cout << " uncursed";
 		cout << (i->second.greased ? " greased" : "");
 		cout << (i->second.fixed ? " fixed" : "");
 		if (i->second.damage > 0) {
