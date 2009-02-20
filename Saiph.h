@@ -75,7 +75,7 @@ class Saiph {
 		bool got_drop_menu;
 		int last_turn;
 
-		Saiph(int interface);
+		Saiph(const std::string &directory, const int interface);
 		~Saiph();
 
 		bool addItemToInventory(unsigned char key, const Item &item);
@@ -84,19 +84,22 @@ class Saiph {
 		unsigned char getDungeonSymbol();
 		unsigned char getDungeonSymbol(const Coordinate &coordinate);
 		unsigned char getDungeonSymbol(const Point &point);
+		unsigned char getDungeonSymbol(unsigned char direction);
 		unsigned char getMonsterSymbol(const Coordinate &coordinate);
 		unsigned char getMonsterSymbol(const Point &point);
 		bool removeItemFromInventory(unsigned char key, const Item &item);
 		bool request(const Request &request);
 		bool run();
-		void setDungeonSymbol(unsigned char symbol);
 		void setDungeonSymbol(const Coordinate &coordinate, unsigned char symbol);
 		void setDungeonSymbol(const Point &point, unsigned char symbol);
-		unsigned char shortestPath(unsigned char symbol, bool allow_illegal_last_move, int *moves);
-		unsigned char shortestPath(const Coordinate &target, bool allow_illegal_last_move, int *moves);
-		unsigned char shortestPath(const Point &target, bool allow_illegal_last_move, int *moves);
+		void setDungeonSymbol(unsigned char symbol);
+		PathNode shortestPath(const Coordinate &target);
+		const PathNode &shortestPath(const Point &target);
+		PathNode shortestPath(unsigned char symbol);
 
 	private:
+		std::string current_directory;
+
 		Connection *connection;
 		std::vector<Analyzer *> analyzers;
 		std::map<std::string, std::vector<int> > levelmap; // used for faster map recognition
@@ -130,6 +133,43 @@ inline unsigned char Saiph::getDungeonSymbol(const Point &point) {
 	return levels[position.level].getDungeonSymbol(point);
 }
 
+inline unsigned char Saiph::getDungeonSymbol(unsigned char direction) {
+	/* return dungeon symbol in given direction on current level */
+	switch (direction) {
+		case NW:
+			return getDungeonSymbol(Point(position.row - 1, position.col - 1));
+
+		case N:
+			return getDungeonSymbol(Point(position.row - 1, position.col));
+
+		case NE:
+			return getDungeonSymbol(Point(position.row - 1, position.col + 1));
+
+		case W:
+			return getDungeonSymbol(Point(position.row, position.col - 1));
+
+		case NOWHERE:
+		case DOWN:
+		case UP:
+			return getDungeonSymbol();
+
+		case E:
+			return getDungeonSymbol(Point(position.row, position.col + 1));
+
+		case SW:
+			return getDungeonSymbol(Point(position.row + 1, position.col - 1));
+
+		case S:
+			return getDungeonSymbol(Point(position.row + 1, position.col));
+
+		case SE:
+			return getDungeonSymbol(Point(position.row + 1, position.col + 1));
+
+		default:
+			return OUTSIDE_MAP;
+	}
+}
+
 inline unsigned char Saiph::getMonsterSymbol(const Coordinate &coordinate) {
 	/* return monster symbol at given point on current level */
 	if (coordinate.level < 0 || coordinate.level > (int) levels.size())
@@ -157,6 +197,11 @@ inline void Saiph::setDungeonSymbol(const Coordinate &coordinate, unsigned char 
 inline void Saiph::setDungeonSymbol(const Point &point, unsigned char symbol) {
 	/* set dungeon symbol at given point on current level */
 	levels[position.level].setDungeonSymbol(point, symbol);
+}
+
+inline const PathNode &Saiph::shortestPath(const Point &point) {
+	/* returns PathNode for shortest path from player to target */
+	return levels[position.level].shortestPath(point);
 }
 
 #endif

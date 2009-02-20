@@ -21,7 +21,7 @@ void Fight::analyze() {
 	/* fight monsters */
 	unsigned char got_thrown = FIGHT_NOT_CHECKED_THROWN_WEAPONS;
 	int min_distance = INT_MAX;
-	int min_moves = INT_MAX;
+	unsigned int min_moves = UNREACHABLE;
 	map<Point, Monster>::iterator best_monster = saiph->levels[saiph->position.level].monsters.end();
 	for (map<Point, Monster>::iterator m = saiph->levels[saiph->position.level].monsters.begin(); m != saiph->levels[saiph->position.level].monsters.end(); ++m) {
 		if (m->second.symbol == PET)
@@ -56,23 +56,22 @@ void Fight::analyze() {
 			}
 		}
 		/* we couldn't throw something at the monster, try moving to or melee it */
-		int moves = 0;
-		unsigned char dir = saiph->shortestPath(m->first, true, &moves);
-		if (dir == ILLEGAL_DIRECTION)
+		const PathNode &node = saiph->shortestPath(m->first);
+		if (node.cost == UNREACHABLE)
 			continue; // unable to path to monster
-		else if (moves > 1 && (priority > PRIORITY_FIGHT_MOVE || saiph->world->player.blind))
+		else if (node.moves > 1 && (priority > PRIORITY_FIGHT_MOVE || saiph->world->player.blind))
 			continue; // we must move to monster, but we got something else with higher priority or are blind
-		else if (moves > min_moves)
+		else if (node.moves > min_moves)
 			continue; // we know of a monster closer than this one
-		else if (moves == 1 && distance == min_distance && priority == PRIORITY_FIGHT_ATTACK && m->second.symbol != '@' && m->second.symbol != 'A')
+		else if (node.moves == 1 && distance == min_distance && priority == PRIORITY_FIGHT_ATTACK && m->second.symbol != '@' && m->second.symbol != 'A')
 			continue; // already got a target
 		else if (blue_e)
-			priority = PRIORITY_FIGHT_BLUE_E;
+			priority = PRIORITY_FIGHT_MELEE_BLUE_E;
 		else
-			priority = (moves == 1) ? PRIORITY_FIGHT_ATTACK : PRIORITY_FIGHT_MOVE;
+			priority = (node.moves == 1) ? PRIORITY_FIGHT_ATTACK : PRIORITY_FIGHT_MOVE;
 		min_distance = distance;
-		min_moves = moves;
-		if (moves == 1) {
+		min_moves = node.moves;
+		if (node.moves == 1) {
 			// always fight using F when distance is 1
 			command = FIGHT;
 #if 1 /* FLOW_CONTROL */
@@ -84,8 +83,8 @@ void Fight::analyze() {
 			ignore_next_prompts = 0;
 #endif
 		}
-		command.push_back(dir);
-		Debug::info(saiph->last_turn) << FIGHT_DEBUG_NAME << "Fighting " << m->second.symbol << " (" << m->first.row << ", " << m->first.col << "): " << "dist: " << distance << ", command: " << command << ", pri: " << priority << ", attitude: " << m->second.attitude << endl;
+		command.push_back(node.dir);
+		Debug::info(saiph->last_turn) << FIGHT_DEBUG_NAME << "Fighting " << m->second.symbol << " " << m->first << ": " << "dist: " << distance << ", command: " << command << ", pri: " << priority << ", attitude: " << m->second.attitude << endl;
 	}
 }
 

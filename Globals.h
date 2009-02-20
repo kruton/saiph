@@ -17,6 +17,8 @@
 #define BRANCH_ASTRAL 6
 #define BRANCH_QUEST 7
 #define KNAPSACK_LIMIT 52
+#define UNREACHABLE UINT_MAX
+#define UNPASSABLE UNREACHABLE - 1
 
 /* unknown tracked symbol value */
 #define UNKNOWN_SYMBOL_VALUE INT_MIN
@@ -257,13 +259,12 @@
 #define PRIORITY_DONATE_CHAT_TO_PRIEST 310
 #define PRIORITY_LAMP_TOGGLE 300
 #define PRIORITY_SHOP_ENTER 275
-#define PRIORITY_DIG_PATH 265
 #define PRIORITY_THRONE_SIT 260
+#define PRIORITY_AMULET_WEAR 255
+#define PRIORITY_ARMOR_WEAR 255
 #define PRIORITY_LOOT_VISIT_STASH 250
 #define PRIORITY_LOOT_DROP_ITEMS 245
 #define PRIORITY_BEATITUDE_DROP_ALTAR 230
-#define PRIORITY_AMULET_WEAR 225
-#define PRIORITY_ARMOR_WEAR 225
 #define PRIORITY_EXCALIBUR_DIP 225
 #define PRIORITY_RING_WEAR 225
 #define PRIORITY_RUB_MAGIC_LAMP 225
@@ -274,11 +275,13 @@
 #define PRIORITY_EXPLORE_FIND_ROGUE_STAIRS 70
 #define PRIORITY_EXPLORE_STAIRS_UP 60
 #define PRIORITY_EXPLORE_EXPLORE 50
+#define PRIORITY_DIG_PATH 45
 #define PRIORITY_SOLVE_SOKOBAN 45
 #define PRIORITY_EXPLORE_STAIRS_DOWN 40
 #define PRIORITY_EXPLORE_TRAVEL 30
-#define PRIORITY_EXPLORE_SEARCH 20
-#define PRIORITY_FIGHT_BLUE_E 15
+#define PRIORITY_FIGHT_MELEE_BLUE_E 25
+#define PRIORITY_DIG_DOWN 20
+#define PRIORITY_EXPLORE_SEARCH 15
 
 /* discard item */
 #define DISCARD "DISCARD"
@@ -328,7 +331,6 @@
 #define MESSAGE_RECEIVED_EXCALIBUR "  From the murky depths, a hand reaches up to bless the sword.  " // wohoo
 #define MESSAGE_SLOWING_DOWN "  You are slowing down.  "
 #define MESSAGE_TELEPORT_WHERE "  To what position do you want to be teleported?  "
-#define MESSAGE_TELEPORT_INSTRUCTIONS "  (For instructions type a ?)  "
 #define MESSAGE_TEXT_BURNED "  Some text has been burned into the floor here.  "
 #define MESSAGE_TEXT_DIGGED "  Something is engraved here on the floor.  "
 #define MESSAGE_TEXT_DUSTED "  Something is written here in the dust.  "

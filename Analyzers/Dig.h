@@ -1,8 +1,15 @@
 #ifndef DIG_H
 #define	DIG_H
 
+#include <list>
 #include <string>
 #include "../Analyzer.h"
+#include "../Point.h"
+#include "../Request.h"
+
+/* Dig messages */
+#define DIG_TOO_HARD " too hard to "
+#define DIG_NOT_ENOUGH_ROOM "  There isn't enough room to "
 
 class Item;
 class Saiph;
@@ -11,21 +18,21 @@ class Dig : public Analyzer {
 	public:
 		Dig(Saiph *saiph);
 
-		void parseMessages(const std::string &message);
 		void analyze();
+		void parseMessages(const std::string &message);
 
 	private:
+		Request req;
 		Saiph *saiph;
-		unsigned char dig_direction;
 		unsigned char digging_tool;
+		unsigned char dig_direction;
+		Point last_dig_target;
+		Coordinate last_dig_location;
+		std::list<Point> dig_locations;
 
-		int directionIs(int direction);
-		bool directionIsWall(int direction);
-		bool directionIsFloor(int direction);
-		int boulderInDirection();
-		bool isDiggingTool(const Item &i);
-		bool isDiggingTool(unsigned char letter);
-		unsigned char findDiggingTool();
+		void findDiggingTool();
 		bool freeWeaponHand();
+		bool isDiggingTool(const Item &item);
+		inline bool canDigDownTile(unsigned char symbol);
 };
 #endif	

@@ -10,9 +10,6 @@
 
 #define SOKOBAN_DEBUG_NAME "Sokoban] "
 
-#define SOKOBAN_LEVELS 8
-#define MAX_SOKOBAN_BOULDERS 21
-
 using namespace std;
 
 class Saiph;
@@ -24,11 +21,16 @@ struct Move {
 	Move(int boulder, unsigned char direction) : boulder(boulder), direction(direction) {}
 };
 
+struct SokobanLevel {
+	vector<Point> boulders;
+	vector<Move> solution;
+};
+
 class Sokoban : public Analyzer {
 	public:
 		Sokoban(Saiph *saiph);
 		bool isSokobanLevel(void);
-		bool isSokobanLevel(int level);
+		bool isSokobanLevel(unsigned int level);
 		int whichSokobanLevel();
 
 		void analyze(void);
@@ -38,18 +40,23 @@ class Sokoban : public Analyzer {
 		void targetNextLocation(int level, const Move &move);
 		void moveBoulderToTarget(int level, const Move &move);
 
+		void loadLevels();
+		bool loadBoulders(ifstream &file, vector<Point> &boulders);
+		bool loadSolutions(ifstream &file, vector<Move> &moves);
+		void getnextline(ifstream &file, string &line);
+
 		Saiph *saiph;
 
-		vector<vector<Point> > boulders;
-		vector<vector<Move> > moves;
+		int lineNumber;
+		vector<SokobanLevel> levels;
 
 		map<int, int> levelMap;
 
-		bool solved[SOKOBAN_LEVELS];
-		bool started[SOKOBAN_LEVELS];
+		vector<bool> solved;
+		vector<bool> started;
 
 		vector<Move>::iterator currentMove;
 		Coordinate currentTarget;
 		bool moving;
 };
-#endif	
+#endif
