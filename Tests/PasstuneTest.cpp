@@ -54,8 +54,10 @@ int main() {
 				used[x] = false;
 		}
 
-		if (gears == PLACES)
+		if (gears == PLACES) {
+			free(check);
 			break;
+		}
 
 		for (int x = 0; x < PLACES; ++x) {
 			if (!used[x]) {
@@ -80,4 +82,7 @@ int main() {
 
 	cout << "Correct guess of " << a->guess << endl;
 	Debug::close();
+
+	delete a;
+	delete saiph;
 }
