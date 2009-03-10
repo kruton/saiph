@@ -26,11 +26,15 @@ Stash.o: Stash.h Stash.cpp
 Telnet.o: Telnet.h Telnet.cpp
 World.o: World.h World.cpp
 
-.PHONY: clean
+.PHONY: clean test
 clean:
 	$(RM) *.o *.gch saiph
 	$(MAKE) -C Analyzers clean
 	$(MAKE) -C Data clean
+	$(MAKE) -C Tests clean
+
+test:
+	$(MAKE) -C Tests
 
 #Launch game
 game:

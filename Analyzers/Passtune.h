@@ -5,6 +5,7 @@
 #include <string>
 #include "../Analyzer.h"
 #include "../Saiph.h"
+#include "../Test.h"
 
 #define PASSTUNE_DEBUG_NAME "Passtune] "
 
@@ -20,6 +21,8 @@
 #define UNKNOWN -1
 
 class Passtune : public Analyzer {
+	ASSIST_UNIT_TEST( Passtune )
+
 	public:
 		Passtune(Saiph *saiph);
 
